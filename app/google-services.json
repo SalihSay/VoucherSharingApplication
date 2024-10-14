@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "835229245022",
+    "project_id": "vouchersharingapplication",
+    "storage_bucket": "vouchersharingapplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835229245022:android:e7015190dfcdfe01a01ecf",
+        "android_client_info": {
+          "package_name": "com.example.vouchersharingapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi4b_N-E6q2MjNBszn0tspLXfZDWcFicA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
