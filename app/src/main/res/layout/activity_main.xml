@@ -1,6 +1,5 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/recyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,57 +7,71 @@
     android:padding="16dp">
 
     <!-- Ürün Adı Girişi -->
-    <Spinner
-        android:id="@+id/urunAdiSpinner"
-        android:layout_width="359dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:hint="Ürün Adı"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <!-- Fiyat Girişi -->
+
+    <AutoCompleteTextView
+        android:id="@+id/urunAutoComplete"
+        android:layout_width="359dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="4dp"
+        android:autofillHints="Ürün"
+        android:contentDescription="@string/urun_auto_complete_description"
+        android:dropDownHeight="wrap_content"
+        android:hint="Ürün Ara"
+        android:iconifiedByDefault="false"
+        android:queryHint="Ürün ara..."
+        app:layout_constraintEnd_toEndOf="@+id/fiyatEditText"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/fiyatEditText"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/fiyatEditText"
         android:layout_width="359dp"
         android:layout_height="58dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="4dp"
+        android:autofillHints="Fiyat"
         android:hint="Fiyat"
         android:inputType="numberDecimal"
+        android:labelFor="@id/urunAutoComplete"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/urunAdiSpinner" />
-
-    <Button
-        android:id="@+id/urunEkleButton"
-        android:layout_width="150dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:text="Ürün Ekle"
-        app:layout_constraintEnd_toStartOf="@+id/fotografCekButton"
-        app:layout_constraintHorizontal_bias="0.113"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fiyatEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/urunAutoComplete" />
 
     <Button
         android:id="@+id/fotografCekButton"
         android:layout_width="150dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="Fotoğraf Çek"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="16dp"
+        android:text="Fiyat"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fiyatEditText" />
+
+    <Button
+        android:id="@+id/urunEkleButton"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="4dp"
+        android:text="Ürün Ekle"
+        app:layout_constraintEnd_toStartOf="@+id/fotografCekButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fiyatEditText" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/urunlerRecyclerView"
         android:layout_width="362dp"
-        android:layout_height="wrap_content"
+        android:layout_height="400dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="8dp"
@@ -67,9 +80,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="wrap"
-        app:layout_constraintHorizontal_bias="0.555"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fiyatEditText"
-        app:layout_constraintVertical_bias="0.257" />
+        app:layout_constraintVertical_bias="0.922" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

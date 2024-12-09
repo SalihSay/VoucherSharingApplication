@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">VoucherSharingApplication</string>
+    <string name="price_hint" />
+    <string name="urun_auto_complete_description" />
+    <string name="fotograf_cek_button_text" />
+    <string name="urun_ekle_button_text" />
+    <string name="urun_adi_hint" />
+    <string name="fiyat_hint" />
+    <string name="urun_image_description" />
 </resources>
