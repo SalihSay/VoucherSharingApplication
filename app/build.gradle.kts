@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
 }
 
 subprojects {
@@ -9,6 +11,8 @@ subprojects {
         options.encoding = "UTF-8"
     }
 }
+
+
 
 android {
     namespace = "com.example.vouchersharingapplication"
@@ -46,18 +50,30 @@ android {
         viewBinding = true
     }
 
+
     packaging {
         resources {
-            excludes += listOf(
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf(
                 "META-INF/DEPENDENCIES",
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1"
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0",
+                "META-INF/*.kotlin_module", //Bu satır özellikle Kotlin ile ilgili çakışmaları gidermek için eklendi
+                "META-INF/gradle/incremental.annotation.processors" // Çakışan dosyayı hariç tutuyoruz
             )
         }
-    }
 }
 
+
 dependencies {
+    implementation("com.google.dagger:hilt-android:2.50")
+    implementation("com.google.dagger:hilt-android-compiler:2.50")
+    implementation("io.coil-kt:coil:2.6.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -85,4 +101,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+   }
 }

@@ -3,13 +3,14 @@ package com.example.vouchersharingapplication.ui.adapter
 import android.util.Log
 import com.example.vouchersharingapplication.data.model.Urun
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.vouchersharingapplication.R
 import com.example.vouchersharingapplication.data.model.UrunDiffCallback
 import com.example.vouchersharingapplication.databinding.UrunItemBinding
-import com.squareup.picasso.Picasso
 
 class UrunAdapter(private val urunList: MutableList<Urun>) : RecyclerView.Adapter<UrunAdapter.UrunViewHolder>() {
 
@@ -23,27 +24,31 @@ class UrunAdapter(private val urunList: MutableList<Urun>) : RecyclerView.Adapte
     override fun onBindViewHolder(holder: UrunViewHolder, position: Int) {
         val currentUrun = urunList[position]
 
-        // Log: Ürün bilgilerini yazdırıyoruz
-        Log.d("UrunAdapter", "Ürün Adı: ${currentUrun.urunAdi}, Fiyat: ${currentUrun.fiyat}, Image URL: ${currentUrun.imageUrl}")
+        Log.d("UrunAdapter", "onBindViewHolder: Binding product: ${currentUrun.urunAdi}, Price: ${currentUrun.fiyat}, Image URL: ${currentUrun.imageUrl}")
 
         holder.binding.urunAdiTextView.text = currentUrun.urunAdi
-        holder.binding.fiyatTextView.text = currentUrun.fiyat.toString()
+        holder.binding.fiyatTextView.text = String.format("%.2f", currentUrun.fiyat) + " TL"
 
         // Ürün resmini yükleyin
-        Picasso.get()
-            .load(currentUrun.imageUrl)
-            .into(holder.binding.urunImageView) // ImageView'iniz
+        if (currentUrun.imageUrl.isNotEmpty()) {
+            holder.binding.urunImageView.load(currentUrun.imageUrl) {
+                placeholder(R.drawable.placeholder_image)
+                error(R.drawable.error_image)
+
+            }
+        } else {
+            Log.d("UrunAdapter", "onBindViewHolder: Image URL is empty for product: ${currentUrun.urunAdi}")
+            holder.binding.urunImageView.visibility = View.GONE
+        }
     }
 
     override fun getItemCount() = urunList.size
 
     // Listeyi güncellemek için DiffUtil kullanımı
     fun updateList(newList: List<Urun>) {
+        Log.d("UrunAdapter", "updateList: Updating list with new size: ${newList.size}")
         val diffCallback = UrunDiffCallback(urunList, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-        // Log: Güncellenen listeyi yazdırıyoruz
-        Log.d("UrunAdapter", "Liste güncelleniyor. Yeni liste: $newList")
 
         urunList.clear()
         urunList.addAll(newList)
@@ -52,9 +57,7 @@ class UrunAdapter(private val urunList: MutableList<Urun>) : RecyclerView.Adapte
 
     // Öğeyi eklemek için
     fun addItem(urun: Urun) {
-        // Log: Eklenen ürünün bilgilerini yazdırıyoruz
-        Log.d("UrunAdapter", "Yeni ürün eklendi: Ad: ${urun.urunAdi}, Fiyat: ${urun.fiyat}, Image URL: ${urun.imageUrl}")
-
+        Log.d("UrunAdapter", "addItem: Adding product: ${urun.urunAdi}, Price: ${urun.fiyat}, Image URL: ${urun.imageUrl}")
         urunList.add(urun)
         notifyItemInserted(urunList.size - 1)
     }

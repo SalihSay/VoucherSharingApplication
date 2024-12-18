@@ -1,6 +1,7 @@
 package com.example.vouchersharingapplication.data.model
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.vouchersharingapplication.data.network.scrapeCarrefourData
@@ -19,6 +20,7 @@ class ScrapeWorker(appContext: Context, workerParams: WorkerParameters) : Worker
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .build()
         db.firestoreSettings = settings
+        Log.d("ScrapeWorker", "Firestore settings initialized")
     }
 
     override fun doWork(): Result {
@@ -27,10 +29,15 @@ class ScrapeWorker(appContext: Context, workerParams: WorkerParameters) : Worker
         return try {
             runBlocking {
                 // Firestore'daki mevcut ürünleri çek
+                Log.d("ScrapeWorker", "doWork: Starting scraping work")
                 val existingUrunler = db.collection("urunler")
                     .get()
                     .await()
                     .documents
+                Log.d(
+                    "ScrapeWorker",
+                    "doWork: Retrieved existing products from Firestore, count: ${existingUrunler.size}"
+                )
 
                 // Ürün adlarına göre gruplandır
                 val urunAdiMap = existingUrunler.groupBy { it.getString("urunAdi") }
@@ -40,6 +47,10 @@ class ScrapeWorker(appContext: Context, workerParams: WorkerParameters) : Worker
                 // Kopyaları sil
                 urunAdiMap.forEach { (urunAdi, documents) ->
                     if (documents.size > 1) {
+                        Log.d(
+                            "ScrapeWorker",
+                            "doWork: Deleting duplicate documents for product: $urunAdi"
+                        )
                         documents.drop(1).forEach { document ->
                             batch.delete(document.reference)
                         }
@@ -48,17 +59,24 @@ class ScrapeWorker(appContext: Context, workerParams: WorkerParameters) : Worker
 
                 // Scraping ve veri güncelleme işlemleri
                 val scrapedUrunlerList = scrapeCarrefourData()
+                Log.d(
+                    "ScrapeWorker",
+                    "doWork: Scraped data, new product count: ${scrapedUrunlerList.size}"
+                )
                 val yeniUrunlerMap = scrapedUrunlerList.associateBy { it.urunAdi }
 
-                val yeniEklenenler = yeniUrunlerMap.filter { (urunAdi, _) -> !urunAdiMap.containsKey(urunAdi) }
+                val yeniEklenenler =
+                    yeniUrunlerMap.filter { (urunAdi, _) -> !urunAdiMap.containsKey(urunAdi) }
                 val guncellenenler = yeniUrunlerMap.filter { (urunAdi, yeniUrun) ->
                     urunAdiMap[urunAdi]?.let { eskiUrun ->
-                        eskiUrun.first().get("fiyat") != yeniUrun.fiyat || eskiUrun.first().get("imageUrl") != yeniUrun.imageUrl
+                        eskiUrun.first().get("fiyat") != yeniUrun.fiyat || eskiUrun.first()
+                            .get("imageUrl") != yeniUrun.imageUrl
                     } ?: false
                 }
 
                 // Yeni ürünleri ekle
                 yeniEklenenler.forEach { (urunAdi, yeniUrun) ->
+                    Log.d("ScrapeWorker", "doWork: Adding new product: $urunAdi")
                     val documentRef = db.collection("urunler").document(urunAdi)
                     val urunMap = mapOf(
                         "urunAdi" to yeniUrun.urunAdi,
@@ -71,6 +89,7 @@ class ScrapeWorker(appContext: Context, workerParams: WorkerParameters) : Worker
 
                 // Güncellenen ürünleri düzenle
                 guncellenenler.forEach { (urunAdi, yeniUrun) ->
+                    Log.d("ScrapeWorker", "doWork: Updating product: $urunAdi")
                     val documentRef = db.collection("urunler").document(urunAdi)
                     val urunMap = mapOf(
                         "urunAdi" to yeniUrun.urunAdi,
@@ -83,10 +102,11 @@ class ScrapeWorker(appContext: Context, workerParams: WorkerParameters) : Worker
 
                 // Batch işlemini uygula
                 batch.commit().await()
+                Log.d("ScrapeWorker", "doWork: Batch commit successful")
                 Result.success()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("ScrapeWorker", "doWork: Error during scraping work", e)
             Result.failure()
         }
     }
